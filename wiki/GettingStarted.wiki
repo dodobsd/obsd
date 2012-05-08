@@ -11,7 +11,19 @@ Indent lists 2 spaces:
   # numbered list
 
 {{{
-verbatim code block
+These values were collected from the PCIe Wikipedia page:
+
+(type)      (bus speed) *  (bus width)    / 8 = (speed in Megabytes/second)
+
+PCI            66 MHz   *  32 bit         / 8 =   264 MB/s
+PCIe v1      2500 Mhz   *  32 1 bit lanes / 8 =   250 MB/s (minus 20% overhead)
+PCIe v2 x1   5000 Mhz   *   1 1 bit lane  / 8 =   500 MB/s (minus 20% overhead)
+PCIe v2 x2   5000 Mhz   *   2 1 bit lanes / 8 =  1000 MB/s (minus 20% overhead)
+PCIe v2 x4   5000 Mhz   *   4 1 bit lanes / 8 =  2000 MB/s (minus 20% overhead)
+PCIe v2 x8   5000 Mhz   *   8 1 bit lanes / 8 =  4000 MB/s (minus 20% overhead)
+PCIe v2 x16  5000 Mhz   *  16 1 bit lanes / 8 =  8000 MB/s (minus 20% overhead)
+PCIe v2 x32  5000 Mhz   *  32 1 bit lanes / 8 = 16000 MB/s (minus 20% overhead)
+PCIe v3 x32  5000 Mhz   *  32 1 bit lanes / 8 = 19700 MB/s (minus 1.5% overhead)
 }}}
 
 Horizontal rule
