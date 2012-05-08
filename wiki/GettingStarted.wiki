@@ -1,14 +1,7 @@
-=Heading1=
-==Heading2==
-===Heading3===
 
-*bold*     _italic_
-`inline code`
-escape: `*`
+Now that you have the max speed of the single PCI slot we need to understand this number represents the max speed of the bus if nothing else is using the PCI bus. Since all PCI cards and built on-board chips use the same bus then they must also be taken into account. If we have two network cards each using a 64bit, 133MHz slot then each slot will get to use 50% of the total speed of the PCI bus. Each card can do 133*64/8= 1064 Megabytes/second and if both network cards are being used at once, like on a firewall, then each card can use 1064/2= 532 Megabytes/second max. This is still well above the maximum speed of a gigabit connection which can move 1000/8= 128 Megabytes/second.
 
-Indent lists 2 spaces:
-  * bullet item
-  # numbered list
+PCI Express is a newer technology which elevates bus bandwidth from hundreds of megabytes per second to many gigabytes per second. This allows a single machine to support multiple gigabit ports per interface card or even multiple 10 gigabit ports. The PCIe link is built around dedicated unidirectional couples of serial (1-bit), point-to-point connections known as lanes. This is in sharp contrast to the earlier PCI connection, which is a bus-based system where all the devices share the same bidirectional, 32-bit or 64-bit parallel bus. PCIe's dedicated lanes allow for an incredible increase in bandwidth.
 
 {{{
 These values were collected from the PCIe Wikipedia page:
@@ -26,11 +19,5 @@ PCIe v2 x32  5000 Mhz   *  32 1 bit lanes / 8 = 16000 MB/s (minus 20% overhead)
 PCIe v3 x32  5000 Mhz   *  32 1 bit lanes / 8 = 19700 MB/s (minus 1.5% overhead)
 }}}
 
-Horizontal rule
----- 
 
-WikiWordLink
 [http://domain/page label]
-http://domain/page
-
-|| table || cells ||
