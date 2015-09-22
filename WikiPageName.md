@@ -1,0 +1,85 @@
+# m0n0  arplookup IP failed: host is not on local network #
+
+m0n0机器没事就出显这样的信息：
+
+/kernel: arplookup 192.168.1.1 failed: host is not on local network
+/kernel: arplookup 192.168.1.1 failed: host is not on local network
+/kernel: arplookup 192.168.1.1 failed: host is not on local network
+
+之后就不能上网啦。
+
+
+
+在google上查到这里 http://my.freebsd.org.hk/html/bsd/5/22/64.html
+
+
+
+# [問題&kuli所提方法請參考前面POST] #
+我是FreeBSD新手, 但是因為在Computer Networking有些許心得, 所以灌水一篇,
+請前輩指導....
+
+> kuli所提方法是可行, 但是治標不治本,  我們先看看這問題出在那兒:
+ARP 在正常使用時是只在同一subnet中跑而已, 而且,  IP nodes只會對Destination
+Protocol Address 是自己的Address之ARP作處理.
+
+所以當Subnet 中每一部機器都正確地Configure, 且機器正確implement ARP protocol時,
+every thing is all right....呵呵~
+
+問題會產生的架構應為 一個router interface接兩(或以上)個subnet的情況:
+(我用sniffer看, 再參考if\_ether.c 歸納之):
+
+> +--------+
+> ---| Router |----------a.b.c.0/24
+> > |        |          a.b.e.0/24
+> > +--------+
+
+一個router interface接兩個subnet:
+
+
+> 正常情況底下, a.b.c.? 要與 a.b.e.? 通訊是要透過ROUTER.
+> 這時候, 如果有一部a.b.e.x的mask是用/16而非/24, 那它要與a.b.c.y通訊時,
+會直接送ARP Request給a.b.c.y而非ROUTER, a.b.c.y會回ARP Reply及檢
+查本身的ARP table(要做reflesh, update等), 一檢查就發現a.b.e.x不在同一sunet,
+那
+> > arplookup a.b.e.x failed: host is not on local network
+就出來了, 呵~
+
+解決方法:1.給a.b.e.x正確的subnet mask(治本), 如果a.b.e.x是別人家的,就.....
+
+> 2.如kuli所提,把message disable mark掉, 當做沒看見(治標, 人家
+> > FreeBSD是後來加上這麼好的DEBUG功能,我們要把它disable掉..
+> > 似乎...有點.....呃....嗯..), 如果一定真要MARK掉也不要針對某個ip,
+> > 因為可能有其他"天殺的" IP 會出來, 所以我建議把這個message
+> > 完全弄掉:
+
+
+> /sys/netinet/if\_ether.c
+
+> arplookup(...) 之這一後:
+
+> if (rt->rt\_flags & RTF\_GATEWAY)
+> > why = "host is not on local network"
+
+> else if ((rt->rt\_flags & RTF\_LLINFO) == 0)
+> > why = "could not allocate llinfo"
+
+> else if (rt->rt\_gateway->sa\_family != AF\_LINK)
+> > why = "gateway route is not ours"
+
+> 改為:
+> if (rt->rt\_flags & RTF\_GATEWAY){
+> > // why = "host is not on local network"
+> > return 0;
+
+> }
+> else if ((rt->rt\_flags & RTF\_LLINFO) == 0)
+> > why = "could not allocate llinfo"
+
+> else if (rt->rt\_gateway->sa\_family != AF\_LINK)
+> > why = "gateway route is not ours"
+
+
+> 這麼一來, 人人通用囉.....
+
+
+希望能解决~
